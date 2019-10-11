@@ -2,7 +2,7 @@ package org.leesia.concurrent.utility.semaphore;
 
 import java.util.concurrent.Semaphore;
 
-public class Service {
+public class SemaphoreService {
 
     private Semaphore semaphore = new Semaphore(1);
 
