@@ -13,6 +13,8 @@ public class Test  {
     }
 
     public static void main(String[] args) throws Exception {
+        Thread.currentThread().setName("main");
+
         BlockingQueue linkedBlockingDeque = new LinkedBlockingDeque(2);
         BlockingQueue linkedBlockingQueue = new LinkedBlockingQueue(3);
         BlockingQueue arrayBlockingQueue = new ArrayBlockingQueue(2);
@@ -44,6 +46,11 @@ public class Test  {
 //                } catch (InterruptedException e) {
 //                    e.printStackTrace();
 //                }
+                if (Thread.currentThread().getName().equals("main")) {
+                    System.out.println("main do it");
+
+                    return;
+                }
                 String t = "";
                 for (int i = 0; i < 100000000; i++) {
                     t = ""+ i;
@@ -54,8 +61,15 @@ public class Test  {
                 System.out.println(Thread.currentThread().getName() + " : end : " + new Date());
             }
         };
+//        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+//        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardOldestPolicy());
+//        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());
+
 
         executor.prestartCoreThread();
+        System.out.println("core size: " + executor.getCorePoolSize());
+        System.out.println("max size: " + executor.getMaximumPoolSize());
         System.out.println("pool size: " + executor.getPoolSize());
 
         executor.execute(runnable);
@@ -66,6 +80,8 @@ public class Test  {
         executor.execute(runnable);
         executor.execute(runnable);
         executor.execute(runnable);
+
+        executor.getActiveCount();
 
         Thread.sleep(3000);
         System.out.println();
@@ -79,6 +95,21 @@ public class Test  {
         executor.execute(runnable);
         executor.execute(runnable);
         executor.execute(runnable);
+
+        Thread.sleep(3000);
+        System.out.println();
+
+        executor.execute(runnable);
+        executor.execute(runnable);
+        executor.execute(runnable);
+        executor.execute(runnable);
+        executor.execute(runnable);
+        executor.execute(runnable);
+        executor.execute(runnable);
+
+        System.out.println("completed: " + executor.getCompletedTaskCount());
+
+        System.out.println("task count: " + executor.getTaskCount());
 
         System.out.println("pool size: " + executor.getCorePoolSize());
 
