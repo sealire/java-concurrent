@@ -13,6 +13,44 @@ public class Test  {
     }
 
     public static void main(String[] args) throws Exception {
+        ExecutorService executor = Executors.newFixedThreadPool(3);
+        try {
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("runnable");
+                }
+            };
+
+            Callable<Double> callable = new Callable<Double>() {
+                @Override
+                public Double call() throws Exception {
+                    Thread.sleep(10000);
+                    return Math.random();
+                }
+            };
+
+            MyDouble d = new MyDouble(0);
+            Runnable myRun = new MyRun(d);
+
+//        executor.submit(runnable);
+            Future<Double> future = executor.submit(callable);
+//        Future<MyDouble> myFuture = executor.submit(myRun, d);
+
+            Thread.sleep(1000);
+//            System.out.println(future.cancel(false));
+            System.out.println(future.get(2, TimeUnit.SECONDS));
+            System.out.println(future.isCancelled());
+            System.out.println(future.isDone());
+
+//        System.out.println(d.getRate());
+//        System.out.println(myFuture.get().getRate());
+        } finally {
+            executor.shutdown();
+        }
+    }
+
+    public static void three() throws Exception {
         Thread.currentThread().setName("main");
 
         BlockingQueue linkedBlockingDeque = new LinkedBlockingDeque(2);
@@ -146,9 +184,40 @@ public class Test  {
     }
 }
 
+class MyDouble {
+    private double rate;
+
+    public MyDouble(double d) {
+        this.rate = d;
+    }
+
+    public double getRate() {
+        return rate;
+    }
+
+    public void setRate(double rate) {
+        this.rate = rate;
+    }
+}
 
 class Temp extends Thread {
     public void run() {
         System.out.println(new Date());
+    }
+}
+
+class MyRun implements Runnable {
+
+    private MyDouble d;
+
+    public MyRun(MyDouble d) {
+        this.d = d;
+    }
+
+    @Override
+    public void run() {
+        System.out.println("MyRun");
+
+        d.setRate(Math.random());
     }
 }
